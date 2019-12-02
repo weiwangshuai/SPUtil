@@ -1,0 +1,1 @@
+include ':app', ':sputil_compiler', ':sputil_annation', ':sputil_lib'

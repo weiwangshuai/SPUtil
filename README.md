@@ -10,10 +10,13 @@ annotationProcessor 'com.github.weiwangshuai.SPUtil:sputil_compiler:1.0.0'
 
 ```
 android{
-    compileOptions {
+.....
+    defaultConfig｛
+        compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
             targetCompatibility JavaVersion.VERSION_1_8
         }
+    ｝
 }
 ```
 ```

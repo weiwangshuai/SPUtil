@@ -43,7 +43,7 @@ public class User {
     public String userName;
 }
 ```
-#### 4.Rebuiled Project,重新构建你的项目时，会自动生成储存的相关代码
+#### 4.Rebuild Project,重新构建你的项目时，会自动生成储存的相关代码
 ```
 public class SPUser {
   public static String getUserName() {

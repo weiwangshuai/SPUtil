@@ -36,13 +36,13 @@ public class Compiler extends AbstractProcessor {
                 TypeSpec.Builder typeSpec = CompilerUtil.compilerTypeSpec(elem);
                 for (Element enclosedElement : elem.getEnclosedElements()) {
                     if (enclosedElement.getKind() == ElementKind.FIELD) {
-                        MethodSpec getMethodSpec = CompilerUtil.compilerGetMethodSpec(enclosedElement, elem.getSimpleName().toString());
+                        MethodSpec getMethodSpec = CompilerUtil.compilerGetMethodSpec(enclosedElement, elem.getSimpleName().toString(),false);
                         MethodSpec putMethodSpec = CompilerUtil.compilerPutMethodSpec(enclosedElement, elem.getSimpleName().toString());
                         if (getMethodSpec != null) {
                             typeSpec.addMethod(getMethodSpec);
+                            typeSpec.addMethod(CompilerUtil.compilerGetMethodSpec(enclosedElement, elem.getSimpleName().toString(),true));
                             typeSpec.addMethod(putMethodSpec);
                         }
-
                     }
                 }
                 CompilerUtil.write(typeSpec.build(), filer);

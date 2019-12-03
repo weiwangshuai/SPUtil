@@ -13,23 +13,47 @@ import javax.lang.model.element.Modifier;
 
 class CompilerUtil {
     static TypeSpec.Builder compilerTypeSpec(Element elem) {
-        return TypeSpec.classBuilder("SP" + elem.getSimpleName().toString())
+        return TypeSpec.classBuilder(String.format("SP%s", elem.getSimpleName().toString()))
                 .addModifiers(Modifier.PUBLIC);
     }
 
 
-    static MethodSpec compilerGetMethodSpec(Element elem, String className) {
+    static MethodSpec compilerGetMethodSpec(Element elem, String className, boolean needDefaultValue) {
         // SPUtils.getInstance().getString("user_username")
         String methodType = getMethodType(elem);
         if (methodType == null) return null;
         ClassName aClass = ClassName.get("com.bhj.sputil_lib", "SPUtils");
-        return MethodSpec.methodBuilder(String.format("get%s", captureName(elem.getSimpleName().toString())))
+        MethodSpec.Builder methodSpec = MethodSpec.methodBuilder(String.format("get%s", captureName(elem.getSimpleName().toString())));
+        if (needDefaultValue) {
+            methodSpec.addParameter(ClassName.get(elem.asType()), "defaultValue");
+        }
+        methodSpec.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .returns(ClassName.get(elem.asType()));
+        if (needDefaultValue) {
+            methodSpec.addStatement("return $T.getInstance().$L($S,defaultValue)",
+                    aClass,
+                    methodType,
+                    String.format("%s_%s", className, elem.getSimpleName().toString()));
+        } else {
+            methodSpec.addStatement("return $T.getInstance().$L($S)",
+                    aClass,
+                    methodType,
+                    String.format("%s_%s", className, elem.getSimpleName().toString()));
+        }
+        return methodSpec.build();
+    }
+
+    static MethodSpec compilerPutMethodSpec(Element elem, String className) {
+        // SPUtils.getInstance().put("user_username",username)
+        ClassName aClass = ClassName.get("com.bhj.sputil_lib", "SPUtils");
+        return MethodSpec.methodBuilder(String.format("put%s", captureName(elem.getSimpleName().toString())))
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .returns(ClassName.get(elem.asType()))
-                .addStatement("return $T.getInstance().$L($S)",
+                .addParameter(ClassName.get(elem.asType()), elem.getSimpleName().toString())
+                .addStatement("$T.getInstance().put($S,$L)",
                         aClass,
-                        methodType,
-                        String.format("%s_%s", className, elem.getSimpleName().toString()))
+                        String.format("%s_%s", className, elem.getSimpleName().toString()),
+                        elem.getSimpleName().toString()
+                )
                 .build();
     }
 
@@ -53,19 +77,6 @@ class CompilerUtil {
         return null;
     }
 
-    static MethodSpec compilerPutMethodSpec(Element elem, String className) {
-        // SPUtils.getInstance().put("user_username",username)
-        ClassName aClass = ClassName.get("com.bhj.sputil_lib", "SPUtils");
-        return MethodSpec.methodBuilder(String.format("put%s", captureName(elem.getSimpleName().toString())))
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .addParameter(ClassName.get(elem.asType()), elem.getSimpleName().toString())
-                .addStatement("$T.getInstance().put($S,$L)",
-                        aClass,
-                        String.format("%s_%s", className, elem.getSimpleName().toString()),
-                        elem.getSimpleName().toString()
-                )
-                .build();
-    }
 
     static void write(TypeSpec typeSpec, Filer filer) {
         JavaFile javaFile = JavaFile.builder("com.bhj.sp", typeSpec)

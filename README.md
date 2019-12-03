@@ -1,6 +1,6 @@
 
 # SPUtil 
-### 数据存储工具类,支部String,float,int,long,boolean数据类型
+### 数据存储管理类,支持 String,float,int,long,boolean数据类型
 ### 使用:
 #### 1.导入库，暂时不支持AndroidX
 ```

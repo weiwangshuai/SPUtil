@@ -49,7 +49,9 @@ public class SPUser {
   public static String getUserName() {
     return SPUtils.getInstance().getString("User_userName");
   }
-
+  public static String getUserName(String defaultValue) {
+    return SPUtils.getInstance().getString("User_userName",defaultValue);
+  }
   public static void putUserName(String userName) {
     SPUtils.getInstance().put("User_userName",userName);
   }

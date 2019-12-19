@@ -23,7 +23,7 @@ allprojects {
     }
 }
 ```
-#### 2.实现IKeyValueStorageModule接口，并添加@KeyValueStorageModule注解，存储相关代码可接口回调里完成，这里是使用腾讯的键值存储框架MMKV
+#### 2.实现IKeyValueStorageModule接口，并添加@KeyValueStorageModule注解，存储相关代码可在接口回调里完成，这里是使用腾讯的键值存储框架MMKV
 ```
 @KeyValueStorageModule()
 public class MyKeyValueStorage implements IKeyValueStorageModule {

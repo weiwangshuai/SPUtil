@@ -1,8 +1,11 @@
 package com.bhj.sputil_compiler;
 
-import com.bhj.sputil_annation.SharedPreferences;
+import com.bhj.sputil_annation.Storage;
+import com.bhj.sputil_annation.KeyValueStorageModule;
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.util.LinkedHashSet;
@@ -31,16 +34,22 @@ public class Compiler extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-        for (Element elem : roundEnvironment.getElementsAnnotatedWith(SharedPreferences.class)) {
+        TypeName className = null;
+        for (Element element : roundEnvironment.getElementsAnnotatedWith(KeyValueStorageModule.class)) {
+            if (element.getKind() == ElementKind.CLASS) {
+                className = ClassName.get(element.asType());
+            }
+        }
+        for (Element elem : roundEnvironment.getElementsAnnotatedWith(Storage.class)) {
             if (elem.getKind() == ElementKind.CLASS) {
                 TypeSpec.Builder typeSpec = CompilerUtil.compilerTypeSpec(elem);
                 for (Element enclosedElement : elem.getEnclosedElements()) {
                     if (enclosedElement.getKind() == ElementKind.FIELD) {
-                        MethodSpec getMethodSpec = CompilerUtil.compilerGetMethodSpec(enclosedElement, elem.getSimpleName().toString(),false);
-                        MethodSpec putMethodSpec = CompilerUtil.compilerPutMethodSpec(enclosedElement, elem.getSimpleName().toString());
+                        MethodSpec getMethodSpec = CompilerUtil.compilerGetMethodSpec(enclosedElement, elem.asType().toString(), false, className);
+                        MethodSpec putMethodSpec = CompilerUtil.compilerPutMethodSpec(enclosedElement, elem.asType().toString(), className);
                         if (getMethodSpec != null) {
                             typeSpec.addMethod(getMethodSpec);
-                            typeSpec.addMethod(CompilerUtil.compilerGetMethodSpec(enclosedElement, elem.getSimpleName().toString(),true));
+                            typeSpec.addMethod(CompilerUtil.compilerGetMethodSpec(enclosedElement, elem.asType().toString(), true, className));
                             typeSpec.addMethod(putMethodSpec);
                         }
                     }
@@ -59,7 +68,8 @@ public class Compiler extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotations = new LinkedHashSet<>();
-        annotations.add(SharedPreferences.class.getCanonicalName());
+        annotations.add(Storage.class.getCanonicalName());
+        annotations.add(KeyValueStorageModule.class.getCanonicalName());
         return annotations;
     }
 }

@@ -20,6 +20,9 @@ android {
         sourceCompatibility '8'
         targetCompatibility '8'
     }
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
 }
 
 dependencies {
@@ -33,4 +36,5 @@ dependencies {
     implementation project(':sputil_annation')
     annotationProcessor project(':sputil_annation')
     implementation project(':sputil_lib')
+    implementation 'com.tencent:mmkv:1.0.23'
 }
